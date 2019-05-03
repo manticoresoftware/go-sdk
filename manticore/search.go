@@ -385,7 +385,7 @@ func (q *Search) SetMaxPredictedTime(predtime time.Duration) {
 // top 10K records. With outer select we can rewrite the query as:
 //
 //  q := NewSearch("some conditions", "my_dist_index", "")
-//	q.Limit = 10000
+//  q.Limit = 10000
 //  q.SetOuterSelect("some_attr", 0, 50000)
 //In this case, the nodes receive only the inner query and execute. This means the master will receive only 20x10K=200K
 // records. The master will take all the records received, reorder them by the OUTER clause and return the best 50K

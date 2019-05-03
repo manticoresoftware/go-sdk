@@ -12,6 +12,100 @@ package manticore
 
 import "fmt"
 
+
+// Known commands
+type eSearchdcommand uint16
+
+const (
+	commandSearch eSearchdcommand = iota
+	commandExcerpt
+	commandUpdate
+	commandKeywords
+	commandPersist
+	commandStatus
+	_
+	commandFlushattrs
+	commandSphinxql
+	commandPing
+	_ // commandDelete not exposed
+	commandUvar
+	_ // commandInsert not exposed
+	_ // commandReplace not exposed
+	_ // commandCommit not exposed
+	_ // commandSuggest not exposed
+	commandJson
+	commandCallpq
+	commandClusterpq
+
+	commandTotal
+	commandWrong = commandTotal
+)
+
+func (vl eSearchdcommand) String() string {
+	switch vl {
+	case commandSearch:
+		return "search"
+	case commandExcerpt:
+		return "excerpt"
+	case commandUpdate:
+		return "update"
+	case commandKeywords:
+		return "keywords"
+	case commandPersist:
+		return "persist"
+	case commandStatus:
+		return "status"
+	case commandFlushattrs:
+		return "flushattrs"
+	case commandSphinxql:
+		return "sphinxql"
+	case commandPing:
+		return "ping"
+	case commandUvar:
+		return "uvar"
+	case commandJson:
+		return "json"
+	case commandCallpq:
+		return "callpq"
+	case commandClusterpq:
+		return "clusterpq"
+	default:
+		return fmt.Sprintf("wrong(%d)", uint16(vl))
+	}
+}
+
+// known command versions
+type uCommandVersion uint16
+
+const verCommandWrong uCommandVersion = 0
+
+var searchdcommandv = [commandTotal]uCommandVersion{
+
+	0x121,           // search
+	0x104,           // excerpt
+	0x103,           // update
+	0x101,           // keywords
+	verCommandWrong, // persist
+	0x101,           // status
+	verCommandWrong, // _
+	0x100,           // flushattrs
+	0x100,           // sphinxql
+	0x100,           // ping
+	verCommandWrong, // delete
+	0x100,           // uvar
+	verCommandWrong, // insert
+	verCommandWrong, // replace
+	verCommandWrong, // commit
+	verCommandWrong, // suggest
+	0x100,           // json
+	0x100,           // callpq
+	0x100,           // clusterpq
+}
+
+func (vl uCommandVersion) String() string {
+	return fmt.Sprintf("%d.%02d", byte(vl>>8), byte(vl&0xFF))
+}
+
 const (
 	cphinxClientVersion uint32 = 1
 	cphinxSearchdProto  uint32 = 1
@@ -399,109 +493,6 @@ const (
 	SortTotal
 )
 
-
-// Known commands
-type eSearchdcommand uint16
-
-const (
-	commandSearch eSearchdcommand = iota
-	commandExcerpt
-	commandUpdate
-	commandKeywords
-	commandPersist
-	commandStatus
-	_
-	commandFlushattrs
-	commandSphinxql
-	commandPing
-	commandDelete
-	commandUvar
-	commandInsert
-	commandReplace
-	commandCommit
-	commandSuggest
-	commandJson
-	commandCallpq
-	commandClusterpq
-
-	commandTotal
-	commandWrong = commandTotal
-)
-
-func (vl eSearchdcommand) String() string {
-	switch vl {
-	case commandSearch:
-		return "search"
-	case commandExcerpt:
-		return "excerpt"
-	case commandUpdate:
-		return "update"
-	case commandKeywords:
-		return "keywords"
-	case commandPersist:
-		return "persist"
-	case commandStatus:
-		return "status"
-	case commandFlushattrs:
-		return "flushattrs"
-	case commandSphinxql:
-		return "sphinxql"
-	case commandPing:
-		return "ping"
-	case commandDelete:
-		return "delete"
-	case commandUvar:
-		return "uvar"
-	case commandInsert:
-		return "insert"
-	case commandReplace:
-		return "replace"
-	case commandCommit:
-		return "commit"
-	case commandSuggest:
-		return "suggest"
-	case commandJson:
-		return "json"
-	case commandCallpq:
-		return "callpq"
-	case commandClusterpq:
-		return "clusterpq"
-	default:
-		return fmt.Sprintf("wrong(%d)", uint16(vl))
-	}
-}
-
-// known command versions
-type uCommandVersion uint16
-
-const verCommandWrong uCommandVersion = 0
-
-var searchdcommandv = [commandTotal]uCommandVersion{
-
-	0x121,           // search
-	0x104,           // excerpt
-	0x103,           // update
-	0x101,           // keywords
-	verCommandWrong, // persist
-	0x101,           // status
-	verCommandWrong, // _
-	0x100,           // flushattrs
-	0x100,           // sphinxql
-	0x100,           // ping
-	verCommandWrong, // delete
-	0x100,           // uvar
-	verCommandWrong, // insert
-	verCommandWrong, // replace
-	verCommandWrong, // commit
-	verCommandWrong, // suggest
-	0x100,           // json
-	0x100,           // callpq
-	0x100,           // clusterpq
-}
-
-func (vl uCommandVersion) String() string {
-	return fmt.Sprintf("%d.%02d", byte(vl>>8), byte(vl&0xFF))
-}
 
 /*
 Qflags is bitmask with query flags which is set by calling Search.SetQueryFlags()
