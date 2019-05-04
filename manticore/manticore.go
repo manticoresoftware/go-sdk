@@ -325,16 +325,20 @@ func (cl *Client) SetServer(host string, port ...uint16) {
 	}
 }
 
-func (cl *Client) Sphinxql(cmd string) (int, error) {
-	tag, err := cl.netQuery(commandFlushattrs, nil, parseDwordAnswer())
-	if tag==nil{
-		return -1, err
+func (cl *Client) Sphinxql(cmd string) ([]byte, error) {
+	blob, err := cl.netQuery(commandSphinxql,
+		buildSphinxqlRequest(cmd),
+		parseSphinxqlAnswer())
+	if blob==nil{
+		return nil, err
 	}
-	return tag.(int), err
+	return blob.([]byte), err
 }
 
 func (cl *Client) Ping(cookie uint32) (uint32, error) {
-	answer, err := cl.netQuery(commandPing, buildDwordRequest(cookie), parseDwordAnswer())
+	answer, err := cl.netQuery(commandPing,
+		buildDwordRequest(cookie),
+		parseDwordAnswer())
 	if answer==nil{
 		return 0, err
 	}

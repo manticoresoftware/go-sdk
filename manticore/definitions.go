@@ -223,66 +223,7 @@ const (
 	GroupbyMultiple                 // group by on multiple attribute values
 )
 
-/* EMatchMode selects search query matching mode.
-So-called matching modes are a legacy feature that used to provide (very) limited query syntax and ranking support.
-Currently, they are deprecated in favor of full-text query language and so-called Available built-in rankers.
-It is thus strongly recommended to use `MatchExtended` and proper query syntax rather than any other legacy mode.
-All those other modes are actually internally converted to extended syntax anyway. SphinxAPI still defaults to
-`MatchAll` but that is for compatibility reasons only.
 
-There are the following matching modes available:
-
-MatchAll
-
-MatchAll matches all query words.
-
-MatchAny
-
-MatchAny matches any of the query words.
-
-MatchPhrase
-
-MatchPhrase, matches query as a phrase, requiring perfect match.
-
-MatchBoolean
-
-MatchBoolean, matches query as a boolean expression (see Boolean query syntax).
-
-MatchExtended
-
-MatchExtended2
-
-MatchExtended, MatchExtended2 (alias) matches query as an expression in Manticore internal query language
-(see Extended query syntax). This is default matching mode if nothing else specified.
-
-MatchFullscan
-
-MatchFullscan, matches query, forcibly using the “full scan” mode as below. NB, any query terms will be ignored,
-such that filters, filter-ranges and grouping will still be applied, but no text-matching. MatchFullscan mode will be
-automatically activated in place of the specified matching mode when the query string is empty (ie. its length is zero).
-
-In full scan mode, all the indexed documents will be considered as matching.
-Such queries will still apply filters, sorting, and group by, but will not perform any full-text searching.
-This can be useful to unify full-text and non-full-text searching code, or to offload SQL server
-(there are cases when Manticore scans will perform better than analogous MySQL queries).
-An example of using the full scan mode might be to find posts in a forum. By selecting the forum’s user ID via
-SetFilter() but not actually providing any search text, Manticore will match every document (i.e. every post)
-where SetFilter() would match - in this case providing every post from that user. By default this will be ordered by
-relevancy, followed by Manticore document ID in ascending order (earliest first).
- */
-type EMatchMode uint32
-
-const (
-	MatchAll       EMatchMode = iota // match all query words
-	MatchAny                         // match any query word
-	MatchPhrase                      // match this exact phrase
-	MatchBoolean                     // match this boolean query
-	MatchExtended                    // match this extended query
-	MatchFullscan                    // match all document IDs w/o fulltext query, apply filters
-	MatchExtended2                   // extended engine V2 (TEMPORARY, WILL BE REMOVED IN 0.9.8-RELEASE)
-
-	MatchTotal
-)
 
 // eQueryoption describes keyword expansion mode. Used only in master-agent mode of search query for commandSearchMaster>=16
 type eQueryoption uint32

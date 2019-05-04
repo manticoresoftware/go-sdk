@@ -1,6 +1,9 @@
 package manticore
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
 func ExampleEscapeString() {
 
@@ -9,3 +12,17 @@ func ExampleEscapeString() {
 	// Output:
 	// escaping\-sample\@query\/string
 }
+
+
+func TestClient_Ping(t *testing.T) {
+
+	cl := NewClient()
+
+	foo, err := cl.Ping (123456789 )
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println(foo)
+	}
+}
+
