@@ -325,14 +325,14 @@ func (cl *Client) SetServer(host string, port ...uint16) {
 	}
 }
 
-func (cl *Client) Sphinxql(cmd string) ([]byte, error) {
+func (cl *Client) Sphinxql(cmd string) ([]sqlresult, error) {
 	blob, err := cl.netQuery(commandSphinxql,
 		buildSphinxqlRequest(cmd),
 		parseSphinxqlAnswer())
 	if blob==nil{
 		return nil, err
 	}
-	return blob.([]byte), err
+	return blob.([]sqlresult), err
 }
 
 func (cl *Client) Ping(cookie uint32) (uint32, error) {

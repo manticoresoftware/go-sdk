@@ -9,7 +9,7 @@ func TestClient_Sphinxql(t *testing.T) {
 
 	cl := NewClient()
 
-	foo, err := cl.Sphinxql ("show meta" )
+	foo, err := cl.Sphinxql ("select * from lj; select * from lj" )
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
