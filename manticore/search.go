@@ -161,7 +161,7 @@ On this call, additional new filter is added to the existing list of filters.
 
 Only those documents where `attribute` column value stored in the index matches any of the values from `values` slice
 will be matched (or rejected, if `exclude` is true).
- */
+*/
 func (q *Search) AddFilter(attribute string, values []int64, exclude bool) {
 	q.filters = append(q.filters, searchFilter{attribute, FilterValues, exclude, values})
 }
@@ -193,7 +193,7 @@ On this call, additional new filter is added to the existing list of filters.
 
 Only those documents where `attribute` column value stored in the index is between `fmin` and `fmax`
 (including values that are exactly equal to `fmin` or `fmax`) will be matched (or rejected, if `exclude` is true).
- */
+*/
 func (q *Search) AddFilterFloatRange(attribute string, fmin, fmax float32, exclude bool) {
 	q.filters = append(q.filters, searchFilter{attribute, FilterFloatrange, exclude, []float32{fmin, fmax}})
 }
@@ -237,7 +237,7 @@ On this call, additional new filter is added to the existing list of filters.
 `exclude` must be a boolean value; it controls whether to accept the matching documents (default mode, when `exclude` is false) or reject them.
 
 Only those documents where `attribute` column value stored in the index equal to string value from `value` will be matched (or rejected, if `exclude` is true).
- */
+*/
 func (q *Search) AddFilterString(attribute string, value string, exclude bool) {
 	q.filters = append(q.filters, searchFilter{attribute, FilterString, exclude, value})
 }
@@ -266,7 +266,7 @@ On this call, additional new filter is added to the existing list of filters.
 
 `attribute` must be a string with attribute name.
 
-`uservar` must be name of user variable, containing list of filtering values, as "@var"
+`uservar` must be name of user variable, containing list of filtering values, starting from @, as "@var"
 
 `exclude` must be a boolean value; it controls whether to accept the matching documents (default mode, when `exclude` is false) or reject them.
 
@@ -296,7 +296,7 @@ This call is only normally required when using multi-queries. You might want to 
 queries in the batch. To do that, you may either create another Search request and fill it from the scratch, either
 copy existing (last one) and modify. To change all the filters in the copy you can call ResetFilters() and add new
 filters using the respective calls.
- */
+*/
 func (q *Search) ResetFilters() {
 	q.geoLatAttr, q.geoLonAttr = "", ""
 	q.filters = nil
@@ -310,7 +310,7 @@ group-by settings in the batch. To do that, you may either create another Search
 copy existing (last one) and modify. In last case you can change individual group-by settings using SetGroupBy() and SetGroupDistinct() calls,
 but you can not disable group-by using those calls. ResetGroupBy() fully resets previous group-by settings and
 disables group-by mode in the current Search query.
- */
+*/
 func (q *Search) ResetGroupBy() {
 	q.GroupDistinct, q.GroupBy = "", ""
 	q.GroupSort = "@group desc"
@@ -324,7 +324,7 @@ This call is only normally required when using multi-queries. You might want to 
 outer select settings in the batch. To do that, you may either create another Search request and fill ot from the scratch, either
 copy existing (last one) and modify. In last case you can change individual group-by settings using SetOuterSelect() calls,
 but you can not disable outer statement by this calls. ResetOuterSelect() fully resets previous outer select settings.
- */
+*/
 func (q *Search) ResetOuterSelect() {
 	q.outerorderby, q.outeroffset, q.outerlimit, q.hasouter = "", 0, 0, false
 }
@@ -336,7 +336,7 @@ This call is only normally required when using multi-queries. You might want to 
 flags of Select queries in the batch. To do that, you may either create another Search request and fill ot from the scratch, either
 copy existing (last one) and modify. In last case you can change individual or many flags using SetQueryFlags() and ChangeQueryFlags() calls.
 This call just one-shot set all the flags to default value `QflagNormalizedTfIdf`, and also set predicted time to 0.
- */
+*/
 func (q *Search) ResetQueryFlags() {
 	q.queryflags = QflagNormalizedTfIdf
 	q.predictedTime = 0
@@ -354,7 +354,7 @@ Manticore will compute geosphere distance between the given anchor point and a p
 longitude attributes from each full-text match, and attach this value to the resulting match. The latitude and l
 ongitude values both in SetGeoAnchor and the index attribute data are expected to be in radians. The result will
 be returned in meters, so geodistance value of 1000.0 means 1 km. 1 mile is approximately 1609.344 meters.
- */
+*/
 func (q *Search) SetGeoAnchor(attrlat, attrlong string, lat, long float32) {
 	q.geoLatAttr, q.geoLonAttr = attrlat, attrlong
 	q.geoLatitude, q.geoLongitude = lat, long
@@ -383,7 +383,7 @@ as the best one from the group. So you can for instance order the groups by matc
 match within each group at the same time.
 
 Grouping on string attributes is supported, with respect to current collation.
- */
+*/
 func (q *Search) SetGroupBy(attribute string, gfunc EGroupBy, groupsort ...string) {
 	if len(groupsort) > 0 {
 		q.GroupSort = groupsort[0]
@@ -503,20 +503,12 @@ SetTokenFilter setups UDF token filter
 `name` is the name of token filtering function in the library, as "email_process"
 
 `opts` is string parameters which passed to udf filter, like "field=email;split=.io". Format of the options determined by UDF plugin.
- */
+*/
 func (q *Search) SetTokenFilter(library, name string, opts string) {
 	q.tokenFlibrary = library
 	q.tokenFname = name
 	q.tokenFopts = opts
 }
-
-
-
-
-
-
-
-
 
 // iOStats is internal structure, used only in master-agent communication
 type iOStats struct {
@@ -530,12 +522,11 @@ type ColumnInfo struct {
 	Type EAttrType // type of the attribute
 }
 
-
 // Match represents one match (document) in result schema
 type Match struct {
-	DocID  DocID			// key Document ID
-	Weight int 				// weight of the match
-	Attrs  []interface{} 	// optional array of attributes, quantity and types depends from schema
+	DocID  DocID         // key Document ID
+	Weight int           // weight of the match
+	Attrs  []interface{} // optional array of attributes, quantity and types depends from schema
 }
 
 // Stringer interface for Match type
@@ -574,15 +565,15 @@ func (vl WordStat) String() string {
 
 // QueryResult represents resultset from successful Query/RunQuery, or one of resultsets from RunQueries call.
 type QueryResult struct {
-	Error, Warning    string			// messages (if any)
-	Status            ESearchdstatus	// status code for current resultset
-	Fields            []string			// fields of the schema
-	Attrs             []ColumnInfo		// attributes of the schema
-	Id64              bool				// if DocumentID is 64-bit (always true)
-	Matches           []Match			// set of matches according to schema
-	Total, TotalFound int				// num of matches and total num of matches found
-	QueryTime         time.Duration		// query duration
-	WordStats         []WordStat		// words statistic
+	Error, Warning    string         // messages (if any)
+	Status            ESearchdstatus // status code for current resultset
+	Fields            []string       // fields of the schema
+	Attrs             []ColumnInfo   // attributes of the schema
+	Id64              bool           // if DocumentID is 64-bit (always true)
+	Matches           []Match        // set of matches according to schema
+	Total, TotalFound int            // num of matches and total num of matches found
+	QueryTime         time.Duration  // query duration
+	WordStats         []WordStat     // words statistic
 }
 
 // Stringer interface for EAttrType type
@@ -635,7 +626,7 @@ func (res ColumnInfo) String() string {
 // Stringer interface for QueryResult type
 func (res QueryResult) String() string {
 	line := fmt.Sprintf("Status: %v\n", res.Status)
-	if res.Status==StatusError {
+	if res.Status == StatusError {
 		line += fmt.Sprintf("Error: %v\n", res.Error)
 	}
 	line += fmt.Sprintf("Query time: %v\n", res.QueryTime)

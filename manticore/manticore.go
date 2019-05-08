@@ -8,21 +8,57 @@
 // have received a copy of the LGPL license along with this program; if you
 // did not, you can find it at http://www.gnu.org/
 
-// Package manticore implements Client to work with manticoresearch over it's internal binary protocol.
-// Also in many cases it may be used to work with sphinxsearch daemon as well.
-// It implements Client connector which may be used as
-//    cl := NewClient()
-//    res, err := cl.Query("hello")
-//    ...
-// Set of functions is mostly imitates API description of Manticoresearch for PHP, but with few
-// changes which are specific to Go language as more effective and mainstream for that language
+/*
+Package manticore implements Client to work with manticoresearch over it's internal binary protocol.
+Also in many cases it may be used to work with sphinxsearch daemon as well.
+It implements Client connector which may be used as
+   cl := NewClient()
+   res, err := cl.Query("hello")
+   ...
+Set of functions is mostly imitates API description of Manticoresearch for PHP, but with few
+changes which are specific to Go language as more effective and mainstream for that language
+
+This SDK help you to send different manticore API packets and parse results.
+These are:
+
+* Search (full-text and full-scan)
+
+* Build snippets
+
+* Build keywords
+
+* Flush attributes
+
+* Perform JSON queries (as via HTTP proto)
+
+* Perform sphinxql queries (as via mysql proto)
+
+* Set user variables
+
+* Ping the server
+
+* Look server status
+
+* Perform pecrolate queries
+
+The percolate query is used to match documents against queries stored in an index.
+It is also called “search in reverse” as it works opposite to a regular search where documents are stored
+in an index and queries are issued against the index.
+
+These queries are stored in special kind index and they can be added, deleted and listed using
+INSERT/DELETE/SELECT statements similar way as it’s done for a regular index.
+
+Checking if a document matches any of the predefined criterias (queries) performed via
+CallPQ function, or via http /json/pq/<index>/_search endpoint.
+They returns list of matched queries and may be additional info as matching clause,
+filters, and tags.
+*/
 package manticore
 
 import (
 	"errors"
 	"time"
 )
-
 
 // BuildExcerpts generates excerpts (snippets)
 // of given documents for given query. returns nil on failure,
@@ -75,7 +111,7 @@ func (cl *Client) BuildExcerpts(docs []string, index,
 	snippets, err := cl.netQuery(commandExcerpt,
 		buildSnippetRequest(popts, docs, index, words),
 		parseSnippetAnswer(ndocs))
-	if snippets==nil {
+	if snippets == nil {
 		return nil, err
 	}
 	return snippets.([]string), err
@@ -104,7 +140,7 @@ func (cl *Client) BuildKeywords(query, index string, hits bool) ([]Keyword, erro
 	keywords, err := cl.netQuery(commandKeywords,
 		buildKeywordsRequest(query, index, hits),
 		parseKeywordsAnswer(hits))
-	if keywords==nil {
+	if keywords == nil {
 		return nil, err
 	}
 	return keywords.([]Keyword), err
@@ -145,7 +181,7 @@ func (cl *Client) Close() (bool, error) {
 //  }
 func (cl *Client) FlushAttributes() (int, error) {
 	tag, err := cl.netQuery(commandFlushattrs, nil, parseDwordAnswer())
-	if tag==nil{
+	if tag == nil {
 		return -1, err
 	}
 	return tag.(int), err
@@ -170,6 +206,25 @@ func (cl *Client) GetLastWarning() string {
 // (if the error was remote, or there were no connection attempts at all).
 func (cl *Client) IsConnectError() bool {
 	return cl.connError
+}
+
+/*
+Json pefrorms remote call of JSON query, as if it were fired via HTTP connection.
+It is intented to run updates and deletes, however works sometimes in other cases.
+General rule: if the endpoint accepts data via POST, it will work via Json call.
+
+`endpoint` - is the endpoint, like "json/search".
+
+`request` - the query. As in REST, expected to be in JSON, like `{"index":"lj","query":{"match":{"title":"luther"}}}`
+*/
+func (cl *Client) Json(endpoint, request string) (JsonAnswer, error) {
+	blob, err := cl.netQuery(commandJson,
+		buildJsonRequest(endpoint, request),
+		parseJsonAnswer())
+	if blob == nil {
+		return JsonAnswer{}, err
+	}
+	return blob.(JsonAnswer), err
 }
 
 // Open opens persistent connection to the server.
@@ -210,7 +265,7 @@ func (cl *Client) Query(query string, indexes ...string) (*QueryResult, error) {
 
 	res, err := cl.RunQuery(NewSearch(query, index, ""))
 
-	if res==nil {
+	if res == nil {
 		return nil, err
 	}
 
@@ -264,7 +319,7 @@ func (cl *Client) RunQuery(query Search) (*QueryResult, error) {
 	res, err := cl.netQuery(commandSearch,
 		buildSearchRequest([]Search{query}),
 		parseSearchAnswer(1))
-	if res==nil {
+	if res == nil {
 		return nil, err
 	}
 	result := res.([]QueryResult)[0]
@@ -304,6 +359,9 @@ func (cl *Client) SetMaxAlloc(alloc int) {
 // `port` is optional, it has sense only for tcp connections and not used for unix socket. Default is 9312
 func (cl *Client) SetServer(host string, port ...uint16) {
 
+	if host == "" {
+		host = "localhost"
+	}
 	if host[0] == '/' {
 		cl.dialmethod = "unix"
 		cl.host = host
@@ -325,21 +383,35 @@ func (cl *Client) SetServer(host string, port ...uint16) {
 	}
 }
 
-func (cl *Client) Sphinxql(cmd string) ([]sqlresult, error) {
+/*
+Sphinxql send sphinxql request encapsulated into API.
+Return over network came in mysql native proto format, which is parsed by SDK and represented
+as usable structure (see Sqlresult definition).
+Also result provides Stringer interface, so it may be printed nice without any postprocessing.
+Limitation of the command is that it is done in one session, as if you open connection via mysql,
+execute the command and disconnected. So, some information, like 'show meta' after 'call pq' will be lost
+in such case (however, you can invoke CallPQ directly from API), but another things like 'select...; show meta'
+in one line is still supported and work well
+*/
+func (cl *Client) Sphinxql(cmd string) ([]Sqlresult, error) {
 	blob, err := cl.netQuery(commandSphinxql,
 		buildSphinxqlRequest(cmd),
 		parseSphinxqlAnswer())
-	if blob==nil{
+	if blob == nil {
 		return nil, err
 	}
-	return blob.([]sqlresult), err
+	return blob.([]Sqlresult), err
 }
 
+/*
+Ping just send a uint32 cookie to the daemon and immediately receive it back.
+It may be used to average network responsibility time, or to ping if daemon is alive or not.
+*/
 func (cl *Client) Ping(cookie uint32) (uint32, error) {
 	answer, err := cl.netQuery(commandPing,
 		buildDwordRequest(cookie),
 		parseDwordAnswer())
-	if answer==nil{
+	if answer == nil {
 		return 0, err
 	}
 	return answer.(uint32), err
@@ -371,7 +443,7 @@ func (cl *Client) Status(global bool) (map[string]string, error) {
 	status, err := cl.netQuery(commandStatus,
 		buildBoolRequest(global),
 		parseStatusAnswer())
-	if status==nil {
+	if status == nil {
 		return nil, err
 	}
 	return status.(map[string]string), err
@@ -422,10 +494,27 @@ func (cl *Client) UpdateAttributes(index string, attrs []string, values map[DocI
 	updated, err := cl.netQuery(commandUpdate,
 		buildUpdateRequest(index, attrs, values, vtype, ignorenonexistent),
 		parseDwordAnswer())
-	if updated==nil {
+	if updated == nil {
 		return -1, err
 	}
 	return int(updated.(uint32)), err
+}
+
+/*
+Uvar defines remote user variable which later may be used for filtering.
+You can really push megabytes of values and later just refer to the whole set by name.
+
+`name` is the name of the variable, must start with @, like "@foo"
+
+`values` is array of the numbers you want to store in the variable. It is considered as 'set',
+so dupes will be removed, order will not be kept. Like: []uint64{7811237,7811235,7811235,7811233,7811236}
+*/
+func (cl *Client) Uvar(name string, values []uint64) error {
+	_, err := cl.netQuery(commandUvar,
+		buildUvarRequest(name, values),
+		parseDwordAnswer())
+
+	return err
 }
 
 // EscapeString escapes characters that are treated as special operators by the query language parser.

@@ -84,14 +84,14 @@ func (buf *apibuf) putBoolDword(val bool) {
 	}
 }
 
-func (buf *apibuf) putBytes(val *[]byte) {
-	*buf = append(*buf, *val...)
+func (buf *apibuf) putBytes(val []byte) {
+	*buf = append(*buf, val...)
 }
 
 func (buf *apibuf) putString(str string) {
 	buf.putLen(len(str))
 	bytes := []byte(str)
-	buf.putBytes(&bytes)
+	buf.putBytes(bytes)
 }
 
 func (buf *apibuf) getByte() byte {
