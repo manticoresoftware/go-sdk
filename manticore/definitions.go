@@ -12,7 +12,6 @@ package manticore
 
 import "fmt"
 
-
 // Known commands
 type eSearchdcommand uint16
 
@@ -136,27 +135,30 @@ const (
 type EAttrType uint32
 
 const (
-	AttrNone       EAttrType = iota              // not an attribute at all
-	AttrInteger                                  // unsigned 32-bit integer
-	AttrTimestamp                                // this attr is a timestamp
-	_                                            // there was SPH_ATTR_ORDINAL=3 once
-	AttrBool                                     // this attr is a boolean bit field
-	AttrFloat                                    // floating point number (IEEE 32-bit)
-	AttrBigint                                   // signed 64-bit integer
-	AttrString                                   // string (binary; in-memory)
-	_                                            // there was SPH_ATTR_WORDCOUNT=8 once
-	AttrPoly2d                                   // vector of floats, 2D polygon (see POLY2D)
-	AttrStringptr                                // string (binary, in-memory, stored as pointer to the zero-terminated string)
-	AttrTokencount                               // field token count, 32-bit integer
-	AttrJson                                     // JSON subset; converted, packed, and stored as string
-	AttrUint32set  EAttrType = iota + 0x40000001 // MVA, set of unsigned 32-bit integers
-	AttrInt64set                                 // MVA, set of signed 64-bit integers
-	// these types are runtime only
-	// used as intermediate types in the expression engine
+	AttrNone       EAttrType = iota       // not an attribute at all
+	AttrInteger                           // unsigned 32-bit integer
+	AttrTimestamp                         // this attr is a timestamp
+	_                                     // there was SPH_ATTR_ORDINAL=3 once
+	AttrBool                              // this attr is a boolean bit field
+	AttrFloat                             // floating point number (IEEE 32-bit)
+	AttrBigint                            // signed 64-bit integer
+	AttrString                            // string (binary; in-memory)
+	_                                     // there was SPH_ATTR_WORDCOUNT=8 once
+	AttrPoly2d                            // vector of floats, 2D polygon (see POLY2D)
+	AttrStringptr                         // string (binary, in-memory, stored as pointer to the zero-terminated string)
+	AttrTokencount                        // field token count, 32-bit integer
+	AttrJson                              // JSON subset; converted, packed, and stored as string
+	AttrUint32set  EAttrType = 0x40000001 // MVA, set of unsigned 32-bit integers
+	AttrInt64set   EAttrType = 0x40000002 // MVA, set of signed 64-bit integers
+)
+
+// these types are runtime only
+// used as intermediate types in the expression engine
+const (
 	AttrMaparg      EAttrType = 1000 + iota
-	AttrFactors      // packed search factors (binary, in-memory, pooled)
-	AttrJsonField    // points to particular field in JSON column subset
-	AttrFactorsJson  // packed search factors (binary, in-memory, pooled, provided to Client json encoded)
+	AttrFactors               // packed search factors (binary, in-memory, pooled)
+	AttrJsonField             // points to particular field in JSON column subset
+	AttrFactorsJson           // packed search factors (binary, in-memory, pooled, provided to Client json encoded)
 )
 
 // eCollation is collation of search query. Used in master-agent extensions for commandSearchMaster>=1
@@ -210,7 +212,7 @@ GroupbyAttr uses attribute value itself for grouping.
 GroupbyMultiple
 
 GroupbyMultiple group by on multiple attribute values. Allowed plain attributes and json fields; MVA and full JSONs are not allowed.
- */
+*/
 type EGroupBy uint32
 
 const (
@@ -219,11 +221,9 @@ const (
 	GroupbyMonth                    // group by month
 	GroupbyYear                     // group by year
 	GroupbyAttr                     // group by attribute value
-	_ 				                // GroupbyAttrpair, group by sequential attrs pair (rendered redundant by 64bit attrs support; removed)
+	_                               // GroupbyAttrpair, group by sequential attrs pair (rendered redundant by 64bit attrs support; removed)
 	GroupbyMultiple                 // group by on multiple attribute values
 )
-
-
 
 // eQueryoption describes keyword expansion mode. Used only in master-agent mode of search query for commandSearchMaster>=16
 type eQueryoption uint32
@@ -298,7 +298,7 @@ RankExport, rank by BM25, but compute and export all user expression factors
 RankPlugin
 
 RankPlugin, rank by user-defined ranker provided as UDF function.
- */
+*/
 type ERankMode uint32
 
 const (
@@ -321,10 +321,10 @@ const (
 type ESearchdstatus uint16
 
 const (
-	StatusOk ESearchdstatus     = iota // general success, command-specific reply follows
-	StatusError                          // general failure, error message follows
-	StatusRetry                          // temporary failure, error message follows, Client should retry late
-	StatusWarning                        // general success, warning message and command-specific reply follow
+	StatusOk      ESearchdstatus = iota // general success, command-specific reply follows
+	StatusError                         // general failure, error message follows
+	StatusRetry                         // temporary failure, error message follows, Client should retry late
+	StatusWarning                       // general success, warning message and command-specific reply follow
 )
 
 // Stringer interface for ESearchdstatus type
@@ -421,7 +421,7 @@ SortAttrAsc, SortAttrDesc and SortTimeSegments modes require simply an attribute
 SortRelevance is equivalent to sorting by “@weight DESC, @id ASC” in extended sorting mode,
 SortAttrAsc is equivalent to “attribute ASC, @weight DESC, @id ASC”,
 and SortAttrDesc to “attribute DESC, @weight DESC, @id ASC” respectively.
- */
+*/
 type ESortOrder uint32
 
 const (
@@ -433,7 +433,6 @@ const (
 	SortExpr                           // sort by arithmetic expression in descending order (eg. "@id + max(@weight,1000)*boost + log(price)")
 	SortTotal
 )
-
 
 /*
 Qflags is bitmask with query flags which is set by calling Search.SetQueryFlags()
