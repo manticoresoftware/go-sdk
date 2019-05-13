@@ -16,7 +16,8 @@ It implements Client connector which may be used as
    res, err := cl.Query("hello")
    ...
 Set of functions is mostly imitates API description of Manticoresearch for PHP, but with few
-changes which are specific to Go language as more effective and mainstream for that language
+changes which are specific to Go language as more effective and mainstream for that language (as, for example,
+error handling).
 
 This SDK help you to send different manticore API packets and parse results.
 These are:
@@ -369,7 +370,7 @@ func (cl *Client) SetServer(host string, port ...uint16) {
 		return
 	}
 
-	if host[:7] == "unix://" {
+	if len(host) >= 7 && host[:7] == "unix://" {
 		cl.dialmethod = "unix"
 		cl.host = host[7:]
 		cl.port = 0
