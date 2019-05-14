@@ -66,4 +66,5 @@ Word stats:
  <nil>
 ```
 
-Read [full documentation on godoc](https://godoc.org/github.com/manticoresoftware/go-sdk/manticore) to learn more about available functions and find more examples.
+Read [full documentation on godoc](https://godoc.org/github.com/manticoresoftware/go-sdk/manticore) to learn more about available functions and find more examples. You can also read it from the console as `go doc go-sdk/manticore`
+
