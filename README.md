@@ -1,4 +1,4 @@
-# Official Go cient for [Manticore Search](https://www.manticoresearch.com).
+# Official Go client for [Manticore Search](https://www.manticoresearch.com).
 
 ## Compatibility
 The client is compatible with Manticore Search 2.8.2 and higher for majority of the commands.
