@@ -187,7 +187,8 @@ const (
 	FilterExpression                    // filter by expression
 )
 
-/* EGroupBy selects search query grouping mode. It is used as a param when calling `SetGroupBy()` function.
+/*
+EGroupBy selects search query grouping mode. It is used as a param when calling `SetGroupBy()` function.
 
 GroupbyDay
 

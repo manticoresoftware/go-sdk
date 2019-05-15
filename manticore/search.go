@@ -9,7 +9,8 @@ import (
 // version of master-agent SEARCH command extension
 const commandSearchMaster uint32 = 16
 
-/* EMatchMode selects search query matching mode.
+/*
+EMatchMode selects search query matching mode.
 So-called matching modes are a legacy feature that used to provide (very) limited query syntax and ranking support.
 Currently, they are deprecated in favor of full-text query language and so-called Available built-in rankers.
 It is thus strongly recommended to use `MatchExtended` and proper query syntax rather than any other legacy mode.

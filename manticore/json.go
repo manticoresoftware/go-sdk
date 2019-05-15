@@ -7,6 +7,15 @@ func buildJsonRequest(endpoint, request string) func(*apibuf) {
 	}
 }
 
+/*
+JsonAnswer encapsulates answer to Json command.
+
+`Endpoint` - endpoint to which request was directed
+
+`Answer` - string, containing the answer. In opposite to true HTTP connection, here only string mesages given,
+no numeric error codes.
+
+*/
 type JsonAnswer struct {
 	Endpoint string
 	Answer   string

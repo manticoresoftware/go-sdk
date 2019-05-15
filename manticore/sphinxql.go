@@ -134,12 +134,16 @@ type sqlfield struct {
 	Unsigned bool
 }
 
+//SqlSchema is the schema of resultset from mysql call.
 type SqlSchema []sqlfield
 
+//SqlResultset returned from Sphinxql and contains one or more mysql resultsets
 type SqlResultset [][]interface{}
 
+//SqlMsg represents answer from mysql proto (error code and message)
 type SqlMsg string
 
+//Stringer interface for SqlMsg type. Provides message like one in mysql cli
 func (r SqlMsg) String() string {
 	if r[0] == '#' {
 		code := r[1:6]
@@ -148,6 +152,7 @@ func (r SqlMsg) String() string {
 	return string(r)
 }
 
+//Sqlresult is mysql resultset with table of messages.
 type Sqlresult struct {
 	Msg          SqlMsg
 	Warnings     uint16
@@ -157,6 +162,10 @@ type Sqlresult struct {
 	Rows         SqlResultset
 }
 
+//Stringer interface for Sqlresult type. provides data like one from mysql cli, as
+//header with the schema, and rows of data following.
+//
+//Number of warnings and errors also provided usual way.
 func (r Sqlresult) String() string {
 	if r.ErrorCode != 0 {
 		return fmt.Sprintf("ERROR %d %v", r.ErrorCode, r.Msg)

@@ -6,7 +6,8 @@ import (
 	"time"
 )
 
-/* Pqflags determines boolean flags for CallQP options
+/*
+Pqflags determines boolean parameter flags for CallQP options
 This flags are unified into one bitfield used instead of bunch of separate flags.
 
 There are the following flags for CallPQ modes available:
@@ -42,7 +43,8 @@ const (
 	SkipBadJson
 )
 
-/* SearchPqOptions incapsulates params to be passed to CallPq function.
+/*
+SearchPqOptions incapsulates params to be passed to CallPq function.
 
 Flags
 
@@ -88,8 +90,9 @@ func buildCallpqRequest(index string, values []string, opts SearchPqOptions) fun
 	}
 }
 
-/* PqResponseFlags determines boolean flags came in SearchPqResponse result
-This flags are unified into one bitfield used instead of bunch of separate flags.
+/*
+PqResponseFlags determines boolean flags came in SearchPqResponse result
+These flags are unified into one bitfield used instead of bunch of separate flags.
 
 There are following bits available:
 
@@ -196,11 +199,11 @@ type QueryDesc = struct {
 }
 
 /*
-PqQuery describes one separate query info from resultset
+PqQuery describes one separate query info from resultset of CallPQ/CallPQBson
 
 Flags determines type of the Query, and also whether other fields of the struct are filled or not.
 
-Query, Tags, Filters - the fields, all optionsl
+Query, Tags, Filters - attributes saved with query, all are optional
 */
 type PqQuery = struct {
 	Flags   QueryDescFlags

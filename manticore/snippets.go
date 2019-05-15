@@ -54,7 +54,7 @@ ExcerptFlagFilesScattered
 It works only with distributed snippets generation with remote agents. The source files
 for snippets could be distributed among different agents, and the main daemon will merge together all non-erroneous
 results. So, if one agent of the distributed index has ‘file1.txt’, another has ‘file2.txt’ and you call for the
-snippets with both these files, the sphinx will merge results from the agents together, so you will get the snippets
+snippets with both these files, the daemon will merge results from the agents together, so you will get the snippets
 from both ‘file1.txt’ and ‘file2.txt’.
 
 If the load_files is also set, the request will return the error in case if any of the files is not available
