@@ -899,7 +899,7 @@ func (result *QueryResult) parseMatch(match *Match, req *apibuf) {
 			foo := req.getRefBytes()
 			ln := len(foo)
 			var res JsonOrStr
-			if foo[ln-2] == 0 { // this is typed
+			if ln>1 && foo[ln-2] == 0 { // this is legacy typed
 				res.IsJson = foo[ln-1] == 0
 				res.Val = string(foo[:ln-2])
 			} else {
