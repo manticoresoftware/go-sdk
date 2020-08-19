@@ -295,11 +295,13 @@ func (buf *apibuf) getMysqlInt() int {
 	if res == 252 {
 		res = int((*buf)[0]) | int((*buf)[1])<<8
 		*buf = (*buf)[2:]
+		return res
 	}
 
 	if res == 253 {
 		res = int((*buf)[0]) | int((*buf)[1])<<8 | int((*buf)[2])<<16
 		*buf = (*buf)[3:]
+		return res
 	}
 
 	if res == 254 {
