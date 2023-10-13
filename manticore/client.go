@@ -135,6 +135,34 @@ func (cl *Client) connect() error {
 	return cl.failclose(err)
 }
 
+/// read raw answer (with fixed size) to buf
+func (cl *Client) readRawAnswer(buf []byte, size int) (int, error) {
+	const MAX_CHUNK_SIZE = 16 * 1024
+	nbytes := 0
+	for {
+		chunkSize := MAX_CHUNK_SIZE
+		bytesRemaining := size - nbytes
+		if bytesRemaining < chunkSize {
+			chunkSize = bytesRemaining
+		}
+		n, e := cl.conn.Read(buf[nbytes:nbytes+chunkSize])
+		if e != nil {
+			return n, e
+		}
+		nbytes += n
+		if (nbytes < size) {
+			continue
+		}
+		break
+	}
+
+	if (nbytes > size) {
+		return nbytes, errors.New("Logical error in Client.read()!")
+	}
+
+	return nbytes, nil
+}
+
 /// get and check response packet from searchd server
 func (cl *Client) getResponse(client_ver uCommandVersion) (apibuf, error) {
 	rawrecv := cl.getByteBuf(8)
@@ -151,7 +179,7 @@ func (cl *Client) getResponse(client_ver uCommandVersion) (apibuf, error) {
 	iReplySize := rawrecv.getInt()
 
 	rawanswer := cl.getByteBuf(iReplySize)
-	nbytes, err = cl.conn.Read(*rawanswer)
+	nbytes, err = cl.readRawAnswer(*rawanswer, iReplySize)
 	if err != nil {
 		return nil, err
 	}
