@@ -1,4 +1,14 @@
-# Official Go client for [Manticore Search](https://www.manticoresearch.com).
+# Binary-API based Go SDK for [Manticore Search](https://www.manticoresearch.com).
+
+❗❗❗ WARNING ❗❗❗
+
+February 10th 2024:
+
+**🚀We've released the new Manticore Go Client - https://github.com/manticoresoftware/manticoresearch-go . 🔃The SDK in this repository will no longer receive support. We recommend users switch to the new client for future updates and support.**
+
+🔧Why the change? This Go SDK was hard to maintain due to its manual creation process and reliance on the Manticore binary protocol. While this method did offer insignificant speed benefits, it also made updates and maintenance more cumbersome. The new Go client marks a significant leap forward. By adopting auto-generation from the [OpenAPI specifications](https://manual.manticoresearch.com/Openapi#OpenAPI-specification), we ensure easier updates, consistent cross-SDK compatibility, and a stronger support moving forward. Transitioning away from a binary protocol may insignificantly impact performance, but the advantages of maintainability, simplified upgrades, and standard API practices significantly outweigh the drawbacks.
+
+📣We urge all users to migrate to the new Go client. Designed for durability, ease of use, and seamless integration with Manticore's search capabilities, it's the future-proof choice. For migration support, visit our docs or contact us.
 
 ## Compatibility
 The client is compatible with Manticore Search 2.8.2 and higher for majority of the commands.
